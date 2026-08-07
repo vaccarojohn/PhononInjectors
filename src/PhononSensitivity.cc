@@ -57,6 +57,10 @@ void PhononSensitivity::EndOfEvent(G4HCofThisEvent* HCE) {
   G4RunManager* runMan = G4RunManager::GetRunManager();
   auto analysisManager = G4AnalysisManager::Instance();
 
+  if( runMan->GetCurrentEvent()->GetEventID() % 100 == 0 ){
+    std::cout << "--> Finished simulating " << runMan->GetCurrentEvent()->GetEventID() << " events." << std::endl;
+  }
+
   for (G4CMPElectrodeHit* hit : *hitVec) {
     analysisManager->FillNtupleIColumn(0, runMan->GetCurrentEvent()->GetEventID());
     analysisManager->FillNtupleIColumn(1, hit->GetTrackID());

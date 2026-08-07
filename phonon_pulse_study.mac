@@ -1,0 +1,16 @@
+/run/initialize
+/analysis/setFileName phonon_pulse_study.csv
+
+/control/verbose 2
+/run/verbose 2
+/run/printProgress 100000
+/event/verbose 0
+/tracking/verbose 0
+
+/phonon/source/awg true
+/phonon/source/numPhonons 500
+/phonon/source/setPulseFilename 10us-example-pulse.txt
+
+/tracking/verbose 0
+#/gun/number 1
+/run/beamOn 1000

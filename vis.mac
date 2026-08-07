@@ -28,11 +28,10 @@
 /phonon/source/numPhonons 100
 /phonon/source/setPulseFilename 10us-example-pulse.txt
 
-#
-# Generate 20 phonons per event to populate display
 /tracking/verbose 0
-/gun/number 1
+#/gun/number 1
 /run/beamOn 1
+
 #
 # Write event display to output files for analysis (face and side views)
 /vis/ogl/set/printFilename g4cmpPhonon.eps

@@ -98,25 +98,25 @@ void PhononPrimaryGeneratorAction::SetPulseFilename(G4String filename) {
 
   fPulseTimes.clear();
   fPulseMagnitudes.clear();
-  fPulseMaximum = 0;
 
   while (std::getline(file, line)) {
     std::stringstream ss(line);
     std::string numstr;
 
-    int i = 0;
+    bool first = true;
     while (std::getline(ss, numstr, '\t')) {
       G4double num = std::stod(numstr);
-      if (i % 3 == 0) {
+      if (first) {
         fPulseTimes.push_back(num);
-      } else if (i % 3 == 2) {
-        fPulseMagnitudes.push_back(num);
+        first = false;
+      } else {
+        G4double sq = num * num;
+        fPulseMagnitudes.push_back(sq);
         
-        if (num > fPulseMaximum) {
-          fPulseMaximum = num;
+        if (sq > fPulseMaximum) {
+          fPulseMaximum = sq;
         }
       }
-      i++;
     }
   }
 
@@ -144,16 +144,42 @@ G4String PhononPrimaryGeneratorAction::GetPulseFilename() {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
+G4int PhononPrimaryGeneratorAction::TimeToIndex(G4double time) {
+  int low = 0;
+  int upp = fPulseTimes.size() - 1;
+
+  while (true) {
+    if (upp == low + 1) {
+      return low;
+    }
+
+    G4int guess = (G4int)((low + upp) / 2);
+
+    if (fPulseTimes[guess] > time) {
+      upp = guess;
+    } else if (fPulseTimes[guess] < time) {
+      low = guess;
+    } else {
+      return guess;
+    }
+  }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
+
 G4double PhononPrimaryGeneratorAction::SampleTiming() {
   int size = fPulseTimes.size();
 
+  G4double t_choice = 0;
   G4int choice = 0;
   G4double mag = 0;
   do {
-    choice = (G4int)(G4UniformRand() * size);
-    mag = (G4int)(G4UniformRand() * fPulseMaximum);
+    t_choice = G4UniformRand() * fPulseTimes[size - 1];
+    choice = TimeToIndex(t_choice);
+    mag = G4UniformRand() * fPulseMaximum;
   } while (mag >= fPulseMagnitudes[choice]);
 
   //G4cout << "sampled at: " << fPulseTimes[choice] << "s" << G4endl;
-  return fPulseTimes[choice];
+  // G4cout << fPulseTimes[choice] * CLHEP::s / 1000 << G4endl;
+  return fPulseTimes[choice] * CLHEP::s;
 }

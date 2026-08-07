@@ -32,6 +32,7 @@ public:
   G4bool GetAWGMode();
   G4int GetNumPhonons();
   G4String GetPulseFilename();
+  G4int TimeToIndex(G4double time);
 
   public:
     virtual void GeneratePrimaries(G4Event*);
